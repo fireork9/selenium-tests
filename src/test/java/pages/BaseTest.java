@@ -20,28 +20,25 @@ public class BaseTest {
     protected WebDriverWait wait;
 
     @BeforeEach
-    public void setUp() {
-        ChromeOptions options = new ChromeOptions();
+    public void setUp() throws Exception {
+        org.openqa.selenium.chrome.ChromeOptions options = new org.openqa.selenium.chrome.ChromeOptions();
 
-        // Проверяем, запущены ли тесты в Docker
         String headless = System.getenv("CHROME_HEADLESS");
         if ("true".equals(headless)) {
-            System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
-
             options.addArguments("--headless=new");
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-dev-shm-usage");
-            options.addArguments("--disable-gpu"); // ОБЯЗАТЕЛЬНЫЙ ФЛАГ ДЛЯ ДЕБИАН
-            options.addArguments("--window-size=1920,1080");
 
-            options.setBinary("/usr/bin/chromium");
+            // Безопасный способ создания URL для Java 21
+            driver = new org.openqa.selenium.remote.RemoteWebDriver(
+                    java.net.URI.create("http://chrome-server:4444/wd/hub").toURL(), options
+            );
         } else {
-            // Если запускаем локально на ПК — скачиваем драйвер через WebDriverManager автоматически
+            // Обычный запуск локально на вашем ПК
             io.github.bonigarcia.wdm.WebDriverManager.chromedriver().setup();
+            driver = new org.openqa.selenium.chrome.ChromeDriver(options);
         }
 
-        // Создаем драйвер ОДИН раз
-        driver = new ChromeDriver(options);
         driver.manage().window().maximize();
         driver.get("https://saucedemo.com");
 
