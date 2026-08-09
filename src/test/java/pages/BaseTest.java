@@ -29,7 +29,9 @@ public class BaseTest {
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-dev-shm-usage");
 
-            // Безопасный способ создания URL для Java 21
+            // ОБЯЗАТЕЛЬНЫЙ АРГУМЕНТ ДЛЯ Headless РЕЖИМА В КОНТЕЙНЕРЕ:
+            options.addArguments("--window-size=1920,1080");
+
             driver = new org.openqa.selenium.remote.RemoteWebDriver(
                     java.net.URI.create("http://chrome-server:4444/wd/hub").toURL(), options
             );
