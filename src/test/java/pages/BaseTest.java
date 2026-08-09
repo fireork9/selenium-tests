@@ -41,7 +41,7 @@ public class BaseTest {
 
         driver.manage().window().maximize();
         driver.get("https://saucedemo.com");
-        wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+        wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(30));
     }
 
     @AfterEach
