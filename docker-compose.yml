@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  tests:
+    build: .
+    volumes:
+      - ./allure-results:/app/allure-results
+      - ./target:/app/target
+    environment:
+      - CHROME_HEADLESS=true
+    command: mvn clean test
