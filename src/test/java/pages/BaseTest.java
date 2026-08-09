@@ -21,25 +21,30 @@ public class BaseTest {
 
     @BeforeEach
     public void setUp() {
-        WebDriverManager.chromedriver().setup();
-
         ChromeOptions options = new ChromeOptions();
 
         // Проверяем, запущены ли тесты в Docker
         String headless = System.getenv("CHROME_HEADLESS");
         if ("true".equals(headless)) {
-            options.addArguments("--headless");
+            // Указываем точный путь к установленному в Linux драйверу вместо скачивания
+            System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
+
+            options.addArguments("--headless=new"); // Используем современныйheadless-режим
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-dev-shm-usage");
             options.addArguments("--window-size=1920,1080");
+            options.setBinary("/usr/bin/chromium"); // Принудительно указываем на сам браузер
+        } else {
+            // Если запускаем локально на ПК — скачиваем драйвер через WebDriverManager автоматически
+            io.github.bonigarcia.wdm.WebDriverManager.chromedriver().setup();
         }
 
-        // Драйвер создается строго ОДИН раз с учетом опций выше
+        // Создаем драйвер ОДИН раз
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
         driver.get("https://saucedemo.com");
 
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
     }
 
     @AfterEach
