@@ -1,25 +1,24 @@
-# Переключаемся на базовый образ на базе Debian Bookworm
-FROM maven:3.9.4-eclipse-temurin-17-debian-bookworm
+# Используем стабильный образ Java 17 на базе Debian
+FROM eclipse-temurin:17-jdk
 
-# Устанавливаем Chromium и ChromeDriver напрямую из стабильного репозитория
+# Устанавливаем Maven, Chromium и ChromeDriver одной командой
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget \
-    unzip \
+    maven \
     chromium \
     chromium-driver \
     && rm -rf /var/lib/apt/lists/*
 
-# Создаем рабочую папку проекта
+# Создаем рабочую папку
 WORKDIR /app
 
-# Копируем pom.xml
+# Копируем настройки проекта
 COPY pom.xml .
 
-# Скачиваем библиотеки в кэш
+# Скачиваем Java-библиотеки в кэш
 RUN mvn dependency:go-offline -B
 
-# Копируем код тестов
+# Копируем исходный код автотестов
 COPY src ./src
 
-# Команда для автоматического запуска
+# Команда для запуска ваших UI-тестов
 CMD ["mvn", "clean", "test"]
