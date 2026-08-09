@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import pages.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,11 +19,28 @@ public class EndToEndTest {
 
     @BeforeEach
     public void setUp() {
-        WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
+        ChromeOptions options = new ChromeOptions();
+
+        // Проверяем, запущены ли тесты в Docker
+        String headless = System.getenv("CHROME_HEADLESS");
+        if ("true".equals(headless)) {
+            // Указываем точный путь к установленному в Linux драйверу вместо скачивания
+            System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
+
+            options.addArguments("--headless=new"); // Используем современныйheadless-режим
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--window-size=1920,1080");
+            options.setBinary("/usr/bin/chromium"); // Принудительно указываем на сам браузер
+        } else {
+            // Если запускаем локально на ПК — скачиваем драйвер через WebDriverManager автоматически
+            io.github.bonigarcia.wdm.WebDriverManager.chromedriver().setup();
+        }
+
+        // Создаем драйвер ОДИН раз
+        driver = new ChromeDriver(options);
         driver.manage().window().maximize();
-        driver.get("https://www.saucedemo.com/");
-        loginPage = new LoginPage(driver);
+        driver.get("https://saucedemo.com");
 
     }
 
