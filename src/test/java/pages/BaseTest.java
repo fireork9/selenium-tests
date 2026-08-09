@@ -26,14 +26,15 @@ public class BaseTest {
         // Проверяем, запущены ли тесты в Docker
         String headless = System.getenv("CHROME_HEADLESS");
         if ("true".equals(headless)) {
-            // Указываем точный путь к установленному в Linux драйверу вместо скачивания
             System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
 
-            options.addArguments("--headless=new"); // Используем современныйheadless-режим
+            options.addArguments("--headless=new");
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--disable-gpu"); // ОБЯЗАТЕЛЬНЫЙ ФЛАГ ДЛЯ ДЕБИАН
             options.addArguments("--window-size=1920,1080");
-            options.setBinary("/usr/bin/chromium"); // Принудительно указываем на сам браузер
+
+            options.setBinary("/usr/bin/chromium");
         } else {
             // Если запускаем локально на ПК — скачиваем драйвер через WebDriverManager автоматически
             io.github.bonigarcia.wdm.WebDriverManager.chromedriver().setup();
