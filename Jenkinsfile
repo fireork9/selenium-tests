@@ -8,41 +8,27 @@ pipeline {
                 echo '✅ Код склонирован'
             }
         }
-
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build('my-selenium-tests')
+                    // Используем ваш точный путь к docker.exe в кавычках с двойными слэшами
+                    bat '"C:\\Users\\Serega\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" build -t "my-selenium-tests" .'
                 }
             }
         }
-
         stage('Run Tests') {
             steps {
                 script {
-                    docker.image('my-selenium-tests').inside {
-                        sh 'mvn clean test'
-                    }
+                    // Запуск тестов через Docker-compose с точным путем
+                    bat '"C:\\Users\\Serega\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker-compose.exe" up --build'
                 }
-            }
-        }
-
-        stage('Collect Results') {
-            steps {
-                echo '✅ Тесты выполнены'
             }
         }
     }
 
     post {
         always {
-            cleanWs()
-        }
-        success {
-            echo '✅ Все тесты прошли успешно!'
-        }
-        failure {
-            echo '❌ Есть упавшие тесты!'
+            echo 'Сборка завершена!'
         }
     }
 }
