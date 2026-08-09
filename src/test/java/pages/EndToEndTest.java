@@ -39,7 +39,7 @@ public class EndToEndTest {
 
         driver.manage().window().maximize();
         driver.get("https://saucedemo.com");
-
+        loginPage = new LoginPage(driver);
     }
 
     @Test
