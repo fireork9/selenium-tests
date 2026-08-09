@@ -8,4 +8,4 @@ services:
       - ./target:/app/target
     environment:
       - CHROME_HEADLESS=true
-    command: mvn clean test
+    command: mvn test
