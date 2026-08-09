@@ -1,7 +1,7 @@
-# Используем образ с Java и Maven
+# Используем стабильный образ Maven на базе Debian, где Chromium ставится без проблем
 FROM maven:3.9.4-eclipse-temurin-17
 
-# Устанавливаем Chrome для headless-режима
+# Устанавливаем Chromium и ChromeDriver для Linux
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
@@ -9,15 +9,17 @@ RUN apt-get update && apt-get install -y \
     chromium-driver \
     && rm -rf /var/lib/apt/lists/*
 
-# Создаём рабочую папку
+# Создаем рабочую папку в контейнере
 WORKDIR /app
 
-# Копируем проект в контейнер
+# Копируем настройки проекта
 COPY pom.xml .
+
+# Скачиваем Java-библиотеки в кэш
+RUN mvn dependency:go-offline -B
+
+# Копируем исходный код тестов
 COPY src ./src
 
-# Скачиваем зависимости
-RUN mvn dependency:go-offline
-
-# Команда для запуска тестов
+# Команда для запуска UI-тестов
 CMD ["mvn", "clean", "test"]
