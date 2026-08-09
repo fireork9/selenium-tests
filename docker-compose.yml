@@ -1,11 +1,27 @@
 version: '3.8'
 
 services:
+  chrome-server:
+    image: selenium/standalone-chrome:latest
+    shm_size: 2gb
+    ports:
+      - "4444:4444"
+    networks:
+      - test-network
+
   tests:
     build: .
+    depends_on:
+      - chrome-server
     volumes:
       - ./allure-results:/app/allure-results
       - ./target:/app/target
     environment:
       - CHROME_HEADLESS=true
+    networks:
+      - test-network
     command: mvn test
+
+networks:
+  test-network:
+    driver: bridge
