@@ -1,25 +1,25 @@
-# Используем стабильный образ Maven на базе Debian, где Chromium ставится без проблем
-FROM maven:3.9.4-eclipse-temurin-17
+# Переключаемся на базовый образ на базе Debian Bookworm
+FROM maven:3.9.4-eclipse-temurin-17-debian-bookworm
 
-# Устанавливаем Chromium и ChromeDriver для Linux
-RUN apt-get update && apt-get install -y \
+# Устанавливаем Chromium и ChromeDriver напрямую из стабильного репозитория
+RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     unzip \
     chromium \
     chromium-driver \
     && rm -rf /var/lib/apt/lists/*
 
-# Создаем рабочую папку в контейнере
+# Создаем рабочую папку проекта
 WORKDIR /app
 
-# Копируем настройки проекта
+# Копируем pom.xml
 COPY pom.xml .
 
-# Скачиваем Java-библиотеки в кэш
+# Скачиваем библиотеки в кэш
 RUN mvn dependency:go-offline -B
 
-# Копируем исходный код тестов
+# Копируем код тестов
 COPY src ./src
 
-# Команда для запуска UI-тестов
+# Команда для автоматического запуска
 CMD ["mvn", "clean", "test"]
